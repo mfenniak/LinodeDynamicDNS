@@ -45,11 +45,11 @@ for o, a in opts:
         domain_root = a
     elif o == "--name":
         domain_name = a
-    elif o == "--name":
+    elif o == "--help":
         display_help = True
 
 if linode_api_key == None or network_iface == None or domain_root == None or domain_name == None or display_help:
-    print "usage: %s --api-key=... --iface=... --root=... --name=... [--force] [--superforce]"
+    print "usage: %s --api-key=... --iface=... --root=... --name=... [--force] [--superforce]" % sys.argv[0]
     print "api-key: Linode API key"
     print "iface:   Network interface (eg. eth0)"
     print "root:    Domain root (eg. example.com)"
