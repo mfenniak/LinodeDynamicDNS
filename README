@@ -1,0 +1,23 @@
+Requires the Python Linode API bindings from:
+
+    http://atxconsulting.com/content/linode-api-bindings
+
+Usage, to update jack.example.com to match eth0's IP address:
+
+    ./update.py --api-key=<linode-api-key> --iface=eth0 --root=example.com --name=jack
+
+update.py writes a state file, prev_ipaddr, to store the IP address set by
+the last invocation.  This prevents hitting the Linode API when the IP address
+hasn't been changed.  Using the --force command-line option will ignore this
+local check and force a remote check.
+
+update.py also checks against the existing domain record to prevent updating
+the zone file when it is not necessary.  Using the --superforce command-line
+option will ignore the remote check and force a zonefile update.
+
+It is recommended that you run update.py relatively constantly (eg. every
+minute from crontab), and run update.py --force rarely (eg. every day).  This
+will ensure that if your IP changes locally it will be updated quickly, while
+minimizing the hits to the Linode API.  The occasional --force will ensure
+that an accidental change in Linode's DNS manager is eventually corrected.
+
