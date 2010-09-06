@@ -22,12 +22,10 @@
 
 from __future__ import with_statement
 
-import socket
-import struct
-import fcntl
 import sys
 import linode.api
 import getopt
+import netifaces
 
 opts, args = getopt.getopt(sys.argv[1:], "", ["force", "superforce", "api-key=", "iface=", "root=", "name=", "help"])
 force = superforce = display_help = False
@@ -61,12 +59,12 @@ if linode_api_key == None or network_iface == None or domain_root == None or dom
 api = linode.api.Api(linode_api_key)
 
 def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,  # SIOCGIFADDR
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+    addresses = netifaces.ifaddresses(ifname).get(netifaces.AF_INET)
+    if addresses == None or len(addresses) == 0:
+        raise Exception("Could not find an AF_INET address for interface %s" % ifname)
+    elif len(addresses) > 1:
+        raise Exception("Found multiple AF_INET addresses for interface %s" % ifname)
+    return addresses[0]["addr"]
 
 ip_addr = get_ip_address(network_iface)
 if not force:
